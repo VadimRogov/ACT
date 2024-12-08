@@ -11,17 +11,22 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
-      - "5433:5432"  # Исправлен порт на стандартный PostgreSQL
+      - "5435:5432"  # Изменен внешний порт на 5435
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
-      context: /
+      context: ./  # Проверьте правильность пути
       dockerfile: src/main/java/backend/Dockerfile
     container_name: backend
     depends_on:
       - db
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres  # Привязан к службе 'db'
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres  # Используйте внутренний порт 5432
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 1270
 
@@ -31,7 +36,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf  # Убедитесь, что путь к конфигурации правильный
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf  # Проверьте правильность пути
     depends_on:
       - backend
 
