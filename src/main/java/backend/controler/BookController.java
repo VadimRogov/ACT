@@ -21,7 +21,7 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Book> getBookById(@RequestParam Long id) {
+    public Optional<Book> getBookById(@PathVariable Long id) {
         return bookRepository.findById(id);
     }
 
