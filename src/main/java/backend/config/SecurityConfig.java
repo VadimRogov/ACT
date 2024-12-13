@@ -25,10 +25,7 @@ public class SecurityConfig {
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/backend/swagger-ui/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
-                .requestMatchers("/api/auth/login").permitAll()
-                .requestMatchers("/api/books/**").permitAll()
-                .requestMatchers("/api/images/**").permitAll()
-                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/**").permitAll()
                 .anyRequest().authenticated(); // Все остальные запросы требуют аутентификации
 
         // Добавляем фильтр для обработки JWT перед UsernamePasswordAuthenticationFilter
