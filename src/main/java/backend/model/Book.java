@@ -19,6 +19,12 @@ public class Book {
     @JsonProperty("title")
     private String title;
 
+    private String author;
+
+    //private Image cover; // обложка
+
+    //private Image book; //
+
     @JsonProperty("description")
     private String description;
 
