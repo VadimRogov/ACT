@@ -1,14 +1,11 @@
 package backend.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
+@Table(name = "books")
 @Getter
 @Setter
 public class Book {
@@ -16,20 +13,25 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonProperty("title")
+    @Column(name = "title", nullable = false)
     private String title;
 
+    @Column(name = "author", nullable = false)
     private String author;
 
-    //private Image cover; // обложка
-
-    //private Image book; //
-
-    @JsonProperty("description")
+    @Column(name = "description", nullable = false)
     private String description;
 
-    @JsonProperty("url")
+    @Column(name = "url", nullable = false)
     private String url;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "cover_id", referencedColumnName = "id")
+    private Image cover;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_image_id", referencedColumnName = "id")
+    private Image bookImage;
 
     @Override
     public String toString() {
@@ -41,4 +43,3 @@ public class Book {
                 '}';
     }
 }
-

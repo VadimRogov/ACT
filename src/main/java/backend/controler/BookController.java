@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,15 +16,11 @@ import java.util.List;
 @Tag(name = "BookController", description = "Контроллер для работы с книгами")
 @RestController
 @RequestMapping("/api/books")
+@RequiredArgsConstructor
 public class BookController {
 
     private final BookService bookService;
     private final JwtUtil jwtUtil;
-
-    public BookController(BookService bookService, JwtUtil jwtUtil) {
-        this.bookService = bookService;
-        this.jwtUtil = jwtUtil;
-    }
 
     @Operation(summary = "Получить все книги")
     @ApiResponses({

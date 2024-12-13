@@ -22,9 +22,12 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Отключаем сессии
                 .and()
                 .authorizeHttpRequests() // Настройка авторизации запросов
-                .requestMatchers("/swagger-ui.html").permitAll()
-                .requestMatchers("/api/auth/login").permitAll() // Разрешаем доступ без авторизации
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/backend/swagger-ui/**").permitAll()
+                .requestMatchers("/v3/api-docs/**").permitAll()
+                .requestMatchers("/api/auth/login").permitAll()
                 .requestMatchers("/api/books/**").permitAll()
+                .requestMatchers("/api/images/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .anyRequest().authenticated(); // Все остальные запросы требуют аутентификации
 

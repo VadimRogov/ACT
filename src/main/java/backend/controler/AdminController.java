@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@Tag(name = "AdminController", description = "Контроллер для авторизации администратора и управления книгами")
+@Tag(name = "AdminController", description = "Контроллер для авторизации администратора и смены пароля")
 @RestController
 @RequestMapping("/api/auth")
 public class AdminController {

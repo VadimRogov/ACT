@@ -2,19 +2,17 @@ package backend.service;
 
 import backend.model.Book;
 import backend.repository.BookRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class BookService {
 
     private final BookRepository bookRepository;
-
-    public BookService(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
-    }
 
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
