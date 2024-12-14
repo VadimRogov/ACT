@@ -3,6 +3,7 @@ package backend.controller;
 import backend.security.JwtUtil;
 import backend.service.AdminService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,9 +32,9 @@ public class AdminController {
             @ApiResponse(responseCode = "401", description = "Неверные учетные данные")
     })
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
-        String username = credentials.get("username");
-        String password = credentials.get("password");
+    public ResponseEntity<?> login(
+            @Parameter(description = "Имя пользователя", required = true) @RequestBody String username,
+            @Parameter(description = "Пароль", required = true) @RequestBody String password) {
 
         if (adminService.authenticate(username, password)) {
             String token = jwtUtil.generateToken(username);
@@ -51,10 +52,10 @@ public class AdminController {
             @ApiResponse(responseCode = "403", description = "Старый пароль неверен")
     })
     @PatchMapping("/change-password")
-    public ResponseEntity<?> changePassword(@RequestBody Map<String, String> passwords) {
-        String username = passwords.get("username");
-        String oldPassword = passwords.get("oldPassword");
-        String newPassword = passwords.get("newPassword");
+    public ResponseEntity<?> changePassword(
+            @Parameter(description = "Имя пользователя", required = true) @RequestBody String username,
+            @Parameter(description = "Старый пароль", required = true) @RequestBody String oldPassword,
+            @Parameter(description = "Новый пароль", required = true) @RequestBody String newPassword) {
 
         if (adminService.changePassword(username, oldPassword, newPassword)) {
             return ResponseEntity.ok("Password changed successfully");

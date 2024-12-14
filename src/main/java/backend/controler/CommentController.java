@@ -4,6 +4,9 @@ import backend.model.Comment;
 import backend.security.JwtUtil;
 import backend.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,14 +27,20 @@ public class CommentController {
 
     @Operation(summary = "Добавить комментарий")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Комментарий успешно добавлен"),
-            @ApiResponse(responseCode = "403", description = "Доступ запрещен")
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Комментарий успешно добавлен",
+                    content = @Content(schema = @Schema(implementation = Comment.class))),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Доступ запрещен",
+                    content = @Content)
     })
     @PostMapping
     public ResponseEntity<Comment> addComment(
             @RequestHeader("Authorization") String authorizationHeader,
-            @RequestParam String content,
-            @RequestParam String author) {
+            @Parameter(description = "Содержимое комментария") @RequestBody String content,
+            @Parameter(description = "Автор комментария") @RequestBody String author) {
 
         // Извлекаем токен из заголовка
         String token = authorizationHeader.substring(7); // Убираем "Bearer "
@@ -47,16 +56,25 @@ public class CommentController {
 
     @Operation(summary = "Обновить комментарий")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Комментарий успешно обновлен"),
-            @ApiResponse(responseCode = "403", description = "Доступ запрещен"),
-            @ApiResponse(responseCode = "404", description = "Комментарий не найден")
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Комментарий успешно обновлен",
+                    content = @Content(schema = @Schema(implementation = Comment.class))),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Доступ запрещен",
+                    content = @Content),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Комментарий не найден",
+                    content = @Content)
     })
     @PutMapping("/{id}")
     public ResponseEntity<Comment> updateComment(
             @RequestHeader("Authorization") String authorizationHeader,
-            @PathVariable Long id,
-            @RequestParam String content,
-            @RequestParam String author) {
+            @Parameter(description = "ID комментария") @PathVariable Long id,
+            @Parameter(description = "Новое содержимое комментария") @RequestBody String content,
+            @Parameter(description = "Новый автор комментария") @RequestBody String author) {
 
         // Извлекаем токен из заголовка
         String token = authorizationHeader.substring(7); // Убираем "Bearer "
@@ -72,14 +90,23 @@ public class CommentController {
 
     @Operation(summary = "Удалить комментарий")
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Комментарий успешно удален"),
-            @ApiResponse(responseCode = "403", description = "Доступ запрещен"),
-            @ApiResponse(responseCode = "404", description = "Комментарий не найден")
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "Комментарий успешно удален",
+                    content = @Content),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Доступ запрещен",
+                    content = @Content),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Комментарий не найден",
+                    content = @Content)
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteComment(
             @RequestHeader("Authorization") String authorizationHeader,
-            @PathVariable Long id) {
+            @Parameter(description = "ID комментария") @PathVariable Long id) {
 
         // Извлекаем токен из заголовка
         String token = authorizationHeader.substring(7); // Убираем "Bearer "
@@ -96,8 +123,14 @@ public class CommentController {
 
     @Operation(summary = "Получить все комментарии")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Комментарии успешно получены"),
-            @ApiResponse(responseCode = "403", description = "Доступ запрещен")
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Комментарии успешно получены",
+                    content = @Content(schema = @Schema(implementation = Comment.class))),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Доступ запрещен",
+                    content = @Content)
     })
     @GetMapping
     public ResponseEntity<List<Comment>> getAllComments(

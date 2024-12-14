@@ -25,11 +25,11 @@ public class UserActivityController {
     })
     @PostMapping("/log")
     public ResponseEntity<Void> logActivity(
-            @RequestParam String userIp,
-            @RequestParam String sessionId,
-            @RequestParam String pageUrl,
-            @RequestParam String eventType,
-            @RequestParam String eventDetails,
+            @RequestBody String userIp,
+            @RequestBody String sessionId,
+            @RequestBody String pageUrl,
+            @RequestBody String eventType,
+            @RequestBody String eventDetails,
             @RequestHeader(value = "Referer", required = false) String referer) {
 
         userActivityService.logActivity(userIp, sessionId, pageUrl, eventType, eventDetails, referer);
