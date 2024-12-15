@@ -25,18 +25,19 @@ public class AnalyticsController {
 
     @Operation(summary = "Получить количество уникальных посетителей", description = "Возвращает количество уникальных посетителей сайта")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Данные успешно получены"),
+            @ApiResponse(responseCode = "200", description = "Данные успешно получены", content = @io.swagger.v3.oas.annotations.media.Content(schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "403", description = "Доступ запрещен")
     })
     @GetMapping("/unique-visitors")
-    public ResponseEntity<Long> getUniqueVisitorsCount(
+    public ResponseEntity<Map<String, Long>> getUniqueVisitorsCount(
             @RequestHeader("Authorization") @Parameter(description = "Токен авторизации", required = true) String authorizationHeader) {
 
         String token = authorizationHeader.substring(7); // Убираем "Bearer "
         String username = jwtUtil.getUsernameFromToken(token);
 
         if ("admin".equals(username)) {
-            return ResponseEntity.ok(analyticsService.getUniqueVisitorsCount());
+            Long count = analyticsService.getUniqueVisitorsCount();
+            return ResponseEntity.ok(Map.of("count", count));
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -44,7 +45,7 @@ public class AnalyticsController {
 
     @Operation(summary = "Получить источники трафика", description = "Возвращает список источников трафика")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Данные успешно получены"),
+            @ApiResponse(responseCode = "200", description = "Данные успешно получены", content = @io.swagger.v3.oas.annotations.media.Content(schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = List.class))),
             @ApiResponse(responseCode = "403", description = "Доступ запрещен")
     })
     @GetMapping("/traffic-sources")
@@ -63,7 +64,7 @@ public class AnalyticsController {
 
     @Operation(summary = "Получить время, проведенное на сайте", description = "Возвращает статистику по времени, проведенному на сайте")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Данные успешно получены"),
+            @ApiResponse(responseCode = "200", description = "Данные успешно получены", content = @io.swagger.v3.oas.annotations.media.Content(schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = List.class))),
             @ApiResponse(responseCode = "403", description = "Доступ запрещен")
     })
     @GetMapping("/time-on-site")
@@ -82,15 +83,17 @@ public class AnalyticsController {
 
     @Operation(summary = "Получить популярные страницы", description = "Возвращает список популярных страниц")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Данные успешно получены"),
-            @ApiResponse(responseCode = "403", description = "Доступ запрещен")
+            @ApiResponse(responseCode = "200", description = "Данные успешно получены", content=@io.swagger.v3.oas.annotations.media.Content(schema=@io.swagger.v3.oas.annotations.media.Schema(implementation=List.class))),
+            @ApiResponse(responseCode="403", description="Доступ запрещен")
     })
     @GetMapping("/popular-pages")
     public ResponseEntity<List<Map<String, Object>>> getPopularPages(
-            @RequestHeader("Authorization") @Parameter(description = "Токен авторизации", required = true) String authorizationHeader) {
+            @RequestHeader("Authorization")
+            @Parameter(description="Токен авторизации", required=true)
+            String authorizationHeader) {
 
-        String token = authorizationHeader.substring(7); // Убираем "Bearer "
-        String username = jwtUtil.getUsernameFromToken(token);
+        String token=authorizationHeader.substring(7); // Убираем “Bearer”
+        String username=jwtUtil.getUsernameFromToken(token);
 
         if ("admin".equals(username)) {
             return ResponseEntity.ok(analyticsService.getPopularPages());
@@ -99,17 +102,23 @@ public class AnalyticsController {
         }
     }
 
-    @Operation(summary = "Получить взаимодействия с интерактивными элементами", description = "Возвращает статистику по взаимодействиям с интерактивными элементами")
+    @Operation(summary="Получить взаимодействия с интерактивными элементами",
+            description="Возвращает статистику по взаимодействиям с интерактивными элементами")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Данные успешно получены"),
-            @ApiResponse(responseCode = "403", description = "Доступ запрещен")
+            @ApiResponse(responseCode="200",
+                    description="Данные успешно получены",
+                    content=@io.swagger.v3.oas.annotations.media.Content(schema=@io.swagger.v3.oas.annotations.media.Schema(implementation=List.class))),
+            @ApiResponse(responseCode="403",
+                    description="Доступ запрещен")
     })
     @GetMapping("/interactive-elements")
     public ResponseEntity<List<Map<String, Object>>> getInteractiveElementInteractions(
-            @RequestHeader("Authorization") @Parameter(description = "Токен авторизации", required = true) String authorizationHeader) {
+            @RequestHeader("Authorization")
+            @Parameter(description="Токен авторизации", required=true)
+            String authorizationHeader) {
 
-        String token = authorizationHeader.substring(7); // Убираем "Bearer "
-        String username = jwtUtil.getUsernameFromToken(token);
+        String token=authorizationHeader.substring(7); // Убираем “Bearer”
+        String username=jwtUtil.getUsernameFromToken(token);
 
         if ("admin".equals(username)) {
             return ResponseEntity.ok(analyticsService.getInteractiveElementInteractions());
