@@ -15,7 +15,7 @@ services:
 
   backend:
     build:
-      context: /src/main/java/backend
+      context: /
       dockerfile: Dockerfile
     container_name: backend
     depends_on:
