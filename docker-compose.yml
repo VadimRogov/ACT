@@ -27,6 +27,14 @@ services:
     ports:
       - "8081:8080"  # Внешний порт 8080, внутренний 8080
 
+  frontend:
+    build:
+      context: ./ # Путь к директории с Dockerfile для фронтенда
+      dockerfile: /fronted/Dockerfile # Убедитесь, что у вас есть Dockerfile в этой директории
+    container_name: frontend
+    ports:
+      - "3000:3000"  # Внешний порт 3000, внутренний 3000 (или другой порт, который использует ваше приложение)
+
   # nginx:
   #   image: nginx:latest
   #   container_name: nginx
