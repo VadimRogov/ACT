@@ -26,14 +26,14 @@ public class AdminController {
         this.jwtUtil = jwtUtil;
     }
 
-    @Operation(summary = "Вход администратора")
+    @Operation(summary = "Вход администратора", description = "Авторизация администратора с использованием имени пользователя и пароля")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Успешный вход"),
             @ApiResponse(responseCode = "401", description = "Неверные учетные данные")
     })
     @PostMapping("/login")
     public ResponseEntity<?> login(
-            @RequestBody LoginRequest loginRequest) {
+            @RequestBody @Parameter(description = "Данные для входа", required = true) LoginRequest loginRequest) {
 
         String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
@@ -48,14 +48,14 @@ public class AdminController {
         }
     }
 
-    @Operation(summary = "Смена пароля администратора")
+    @Operation(summary = "Смена пароля администратора", description = "Смена пароля администратора с проверкой старого пароля")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Пароль успешно изменен"),
             @ApiResponse(responseCode = "403", description = "Старый пароль неверен")
     })
     @PatchMapping("/change-password")
     public ResponseEntity<?> changePassword(
-            @RequestBody ChangePasswordRequest changePasswordRequest) {
+            @RequestBody @Parameter(description = "Данные для смены пароля", required = true) ChangePasswordRequest changePasswordRequest) {
 
         String username = changePasswordRequest.getUsername();
         String oldPassword = changePasswordRequest.getOldPassword();
@@ -70,7 +70,10 @@ public class AdminController {
 
     // Вспомогательные классы для запросов
     public static class LoginRequest {
+        @Parameter(description = "Имя пользователя", required = true)
         private String username;
+
+        @Parameter(description = "Пароль", required = true)
         private String password;
 
         public String getUsername() {
@@ -91,8 +94,13 @@ public class AdminController {
     }
 
     public static class ChangePasswordRequest {
+        @Parameter(description = "Имя пользователя", required = true)
         private String username;
+
+        @Parameter(description = "Старый пароль", required = true)
         private String oldPassword;
+
+        @Parameter(description = "Новый пароль", required = true)
         private String newPassword;
 
         public String getUsername() {

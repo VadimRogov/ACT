@@ -18,7 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@Tag(name = "ImageController", description = "Контроллер сохранения, обновления, получения и удаления изображений")
+@Tag(name = "ImageController", description = "Контроллер для работы с изображениями")
 @RestController
 @RequestMapping("/api/images")
 @RequiredArgsConstructor
@@ -26,29 +26,21 @@ public class ImageController {
     private final ImageService imageService;
     private final JwtUtil jwtUtil;
 
-    @Operation(summary = "Сохранение изображения")
+    @Operation(summary = "Сохранение изображения", description = "Сохраняет новое изображение для книги")
     @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Изображение успешно сохранено",
-                    content = @Content(schema = @Schema(implementation = Image.class))),
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Доступ к запрошенному ресурсу запрещен",
-                    content = @Content)
+            @ApiResponse(responseCode = "200", description = "Изображение успешно сохранено"),
+            @ApiResponse(responseCode = "403", description = "Доступ запрещен")
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createImage(
-            @RequestHeader("Authorization") String authorizationHeader,
-            @Parameter(description = "Id книги") @RequestParam("bookId") Long bookId,
-            @Parameter(description = "Тип изображения") @RequestParam("imageType") ImageType imageType,
-            @Parameter(description = "Файл изображения") @RequestParam("file") MultipartFile file) {
+            @RequestHeader("Authorization") @Parameter(description = "Токен авторизации", required = true) String authorizationHeader,
+            @RequestParam("bookId") @Parameter(description = "ID книги", required = true) Long bookId,
+            @RequestParam("imageType") @Parameter(description = "Тип изображения", required = true) ImageType imageType,
+            @RequestParam("file") @Parameter(description = "Файл изображения", required = true) MultipartFile file) {
 
-        // Извлекаем токен из заголовка
         String token = authorizationHeader.substring(7); // Убираем "Bearer "
         String username = jwtUtil.getUsernameFromToken(token);
 
-        // Проверяем, что пользователь авторизован (например, проверяем, что username соответствует администратору)
         if ("admin".equals(username)) {
             return ResponseEntity.ok(imageService.createImage(bookId, imageType, file));
         } else {
@@ -56,33 +48,22 @@ public class ImageController {
         }
     }
 
-    @Operation(summary = "Обновление изображения")
+    @Operation(summary = "Обновление изображения", description = "Обновляет существующее изображение для книги")
     @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Изображение успешно обновлено",
-                    content = @Content(schema = @Schema(implementation = Image.class))),
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Доступ к запрошенному ресурсу запрещен",
-                    content = @Content),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "Изображение не найдено",
-                    content = @Content)
+            @ApiResponse(responseCode = "200", description = "Изображение успешно обновлено"),
+            @ApiResponse(responseCode = "403", description = "Доступ запрещен"),
+            @ApiResponse(responseCode = "404", description = "Изображение не найдено")
     })
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateImage(
-            @RequestHeader("Authorization") String authorizationHeader,
-            @Parameter(description = "Id книги") @RequestParam("bookId") Long bookId,
-            @Parameter(description = "Тип изображения") @RequestParam("imageType") ImageType imageType,
-            @Parameter(description = "Файл изображения") @RequestParam("file") MultipartFile file) {
+            @RequestHeader("Authorization") @Parameter(description = "Токен авторизации", required = true) String authorizationHeader,
+            @RequestParam("bookId") @Parameter(description = "ID книги", required = true) Long bookId,
+            @RequestParam("imageType") @Parameter(description = "Тип изображения", required = true) ImageType imageType,
+            @RequestParam("file") @Parameter(description = "Файл изображения", required = true) MultipartFile file) {
 
-        // Извлекаем токен из заголовка
         String token = authorizationHeader.substring(7); // Убираем "Bearer "
         String username = jwtUtil.getUsernameFromToken(token);
 
-        // Проверяем, что пользователь авторизован (например, проверяем, что username соответствует администратору)
         if ("admin".equals(username)) {
             return ResponseEntity.ok(imageService.updateImage(bookId, imageType, file));
         } else {
@@ -90,32 +71,21 @@ public class ImageController {
         }
     }
 
-    @Operation(summary = "Удаление изображения")
+    @Operation(summary = "Удаление изображения", description = "Удаляет изображение для книги")
     @ApiResponses({
-            @ApiResponse(
-                    responseCode = "204",
-                    description = "Изображение успешно удалено",
-                    content = @Content),
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Доступ к запрошенному ресурсу запрещен",
-                    content = @Content),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "Изображение не найдено",
-                    content = @Content)
+            @ApiResponse(responseCode = "204", description = "Изображение успешно удалено"),
+            @ApiResponse(responseCode = "403", description = "Доступ запрещен"),
+            @ApiResponse(responseCode = "404", description = "Изображение не найдено")
     })
     @DeleteMapping("/{bookId}/{imageType}")
     public ResponseEntity<Void> deleteImage(
-            @RequestHeader("Authorization") String authorizationHeader,
-            @PathVariable("bookId") Long bookId,
-            @PathVariable("imageType") ImageType imageType) {
+            @RequestHeader("Authorization") @Parameter(description = "Токен авторизации", required = true) String authorizationHeader,
+            @PathVariable("bookId") @Parameter(description = "ID книги", required = true) Long bookId,
+            @PathVariable("imageType") @Parameter(description = "Тип изображения", required = true) ImageType imageType) {
 
-        // Извлекаем токен из заголовка
         String token = authorizationHeader.substring(7); // Убираем "Bearer "
         String username = jwtUtil.getUsernameFromToken(token);
 
-        // Проверяем, что пользователь авторизован (например, проверяем, что username соответствует администратору)
         if ("admin".equals(username)) {
             imageService.deleteImage(bookId, imageType);
             return ResponseEntity.noContent().build();
@@ -124,33 +94,26 @@ public class ImageController {
         }
     }
 
-    @Operation(summary = "Получение изображения по id книги и типу")
+    @Operation(summary = "Получение изображения", description = "Возвращает изображение для книги по указанному ID и типу")
     @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Успешный запрос",
-                    content = @Content(mediaType = MediaType.IMAGE_PNG_VALUE)),
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Доступ к запрошенному ресурсу запрещен",
-                    content = @Content)
+            @ApiResponse(responseCode = "200", description = "Изображение успешно получено"),
+            @ApiResponse(responseCode = "403", description = "Доступ запрещен"),
+            @ApiResponse(responseCode = "404", description = "Изображение не найдено")
     })
     @GetMapping("/{bookId}/{imageType}")
     @ResponseBody
     public ResponseEntity<byte[]> getImage(
-            @RequestHeader("Authorization") String authorizationHeader,
-            @PathVariable("bookId") Long bookId,
-            @PathVariable("imageType") ImageType imageType) {
+            @RequestHeader("Authorization") @Parameter(description = "Токен авторизации", required = true) String authorizationHeader,
+            @PathVariable("bookId") @Parameter(description = "ID книги", required = true) Long bookId,
+            @PathVariable("imageType") @Parameter(description = "Тип изображения", required = true) ImageType imageType) {
 
-        // Извлекаем токен из заголовка
         String token = authorizationHeader.substring(7); // Убираем "Bearer "
         String username = jwtUtil.getUsernameFromToken(token);
 
-        // Проверяем, что пользователь авторизован (например, проверяем, что username соответствует администратору)
         if ("admin".equals(username)) {
             byte[] imageData = imageService.getImageByBookIdAndType(bookId, imageType);
             return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_PNG) // Укажите правильный тип контента
+                    .contentType(MediaType.IMAGE_PNG)
                     .body(imageData);
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

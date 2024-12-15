@@ -25,27 +25,19 @@ public class CommentController {
     private final CommentService commentService;
     private final JwtUtil jwtUtil;
 
-    @Operation(summary = "Добавить комментарий")
+    @Operation(summary = "Добавить комментарий", description = "Добавляет новый комментарий")
     @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Комментарий успешно добавлен",
-                    content = @Content(schema = @Schema(implementation = Comment.class))),
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Доступ запрещен",
-                    content = @Content)
+            @ApiResponse(responseCode = "200", description = "Комментарий успешно добавлен"),
+            @ApiResponse(responseCode = "403", description = "Доступ запрещен")
     })
     @PostMapping
     public ResponseEntity<Comment> addComment(
-            @RequestHeader("Authorization") String authorizationHeader,
-            @RequestBody Comment comment) {
+            @RequestHeader("Authorization") @Parameter(description = "Токен авторизации", required = true) String authorizationHeader,
+            @RequestBody @Parameter(description = "Данные комментария", required = true) Comment comment) {
 
-        // Извлекаем токен из заголовка
         String token = authorizationHeader.substring(7); // Убираем "Bearer "
         String username = jwtUtil.getUsernameFromToken(token);
 
-        // Проверяем, что пользователь авторизован
         if ("admin".equals(username)) {
             return ResponseEntity.ok(commentService.addComment(comment.getContent(), comment.getAuthor()));
         } else {
@@ -53,32 +45,21 @@ public class CommentController {
         }
     }
 
-    @Operation(summary = "Обновить комментарий")
+    @Operation(summary = "Обновить комментарий", description = "Обновляет существующий комментарий")
     @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Комментарий успешно обновлен",
-                    content = @Content(schema = @Schema(implementation = Comment.class))),
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Доступ запрещен",
-                    content = @Content),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "Комментарий не найден",
-                    content = @Content)
+            @ApiResponse(responseCode = "200", description = "Комментарий успешно обновлен"),
+            @ApiResponse(responseCode = "403", description = "Доступ запрещен"),
+            @ApiResponse(responseCode = "404", description = "Комментарий не найден")
     })
     @PutMapping("/{id}")
     public ResponseEntity<Comment> updateComment(
-            @RequestHeader("Authorization") String authorizationHeader,
-            @Parameter(description = "ID комментария") @PathVariable Long id,
-            @RequestBody Comment comment) {
+            @RequestHeader("Authorization") @Parameter(description = "Токен авторизации", required = true) String authorizationHeader,
+            @PathVariable @Parameter(description = "ID комментария", required = true) Long id,
+            @RequestBody @Parameter(description = "Данные комментария", required = true) Comment comment) {
 
-        // Извлекаем токен из заголовка
         String token = authorizationHeader.substring(7); // Убираем "Bearer "
         String username = jwtUtil.getUsernameFromToken(token);
 
-        // Проверяем, что пользователь авторизован
         if ("admin".equals(username)) {
             return ResponseEntity.ok(commentService.updateComment(id, comment.getContent(), comment.getAuthor()));
         } else {
@@ -86,31 +67,20 @@ public class CommentController {
         }
     }
 
-    @Operation(summary = "Удалить комментарий")
+    @Operation(summary = "Удалить комментарий", description = "Удаляет комментарий по указанному ID")
     @ApiResponses({
-            @ApiResponse(
-                    responseCode = "204",
-                    description = "Комментарий успешно удален",
-                    content = @Content),
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Доступ запрещен",
-                    content = @Content),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "Комментарий не найден",
-                    content = @Content)
+            @ApiResponse(responseCode = "204", description = "Комментарий успешно удален"),
+            @ApiResponse(responseCode = "403", description = "Доступ запрещен"),
+            @ApiResponse(responseCode = "404", description = "Комментарий не найден")
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteComment(
-            @RequestHeader("Authorization") String authorizationHeader,
-            @Parameter(description = "ID комментария") @PathVariable Long id) {
+            @RequestHeader("Authorization") @Parameter(description = "Токен авторизации", required = true) String authorizationHeader,
+            @PathVariable @Parameter(description = "ID комментария", required = true) Long id) {
 
-        // Извлекаем токен из заголовка
         String token = authorizationHeader.substring(7); // Убираем "Bearer "
         String username = jwtUtil.getUsernameFromToken(token);
 
-        // Проверяем, что пользователь авторизован
         if ("admin".equals(username)) {
             commentService.deleteComment(id);
             return ResponseEntity.noContent().build();
@@ -119,26 +89,18 @@ public class CommentController {
         }
     }
 
-    @Operation(summary = "Получить все комментарии")
+    @Operation(summary = "Получить все комментарии", description = "Возвращает список всех комментариев")
     @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Комментарии успешно получены",
-                    content = @Content(schema = @Schema(implementation = Comment.class))),
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Доступ запрещен",
-                    content = @Content)
+            @ApiResponse(responseCode = "200", description = "Комментарии успешно получены"),
+            @ApiResponse(responseCode = "403", description = "Доступ запрещен")
     })
     @GetMapping
     public ResponseEntity<List<Comment>> getAllComments(
-            @RequestHeader("Authorization") String authorizationHeader) {
+            @RequestHeader("Authorization") @Parameter(description = "Токен авторизации", required = true) String authorizationHeader) {
 
-        // Извлекаем токен из заголовка
         String token = authorizationHeader.substring(7); // Убираем "Bearer "
         String username = jwtUtil.getUsernameFromToken(token);
 
-        // Проверяем, что пользователь авторизован
         if ("admin".equals(username)) {
             return ResponseEntity.ok(commentService.getAllComments());
         } else {

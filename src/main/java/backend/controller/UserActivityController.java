@@ -3,6 +3,7 @@ package backend.controller;
 import backend.dto.UserActivityLogRequest;
 import backend.service.UserActivityService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,18 +21,19 @@ import java.util.Map;
 public class UserActivityController {
     private final UserActivityService userActivityService;
 
-    @Operation(summary = "Логирование активности пользователя")
+    @Operation(summary = "Логирование активности пользователя", description = "Логирует активность пользователя на сайте")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Активность успешно залогирована"),
             @ApiResponse(responseCode = "400", description = "Некорректные данные запроса")
     })
     @PostMapping("/log")
-    public ResponseEntity<Void> logActivity(@RequestBody UserActivityLogRequest request) {
+    public ResponseEntity<Void> logActivity(
+            @RequestBody @Parameter(description = "Данные активности", required = true) UserActivityLogRequest request) {
         userActivityService.logActivity(request);
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "Получение статистики по популярным страницам")
+    @Operation(summary = "Получение статистики по популярным страницам", description = "Возвращает статистику по популярным страницам")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Статистика успешно получена")
     })
@@ -40,7 +42,7 @@ public class UserActivityController {
         return ResponseEntity.ok(userActivityService.getPopularPages());
     }
 
-    @Operation(summary = "Получение статистики по источникам трафика")
+    @Operation(summary = "Получение статистики по источникам трафика", description = "Возвращает статистику по источникам трафика")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Статистика успешно получена")
     })
@@ -49,7 +51,7 @@ public class UserActivityController {
         return ResponseEntity.ok(userActivityService.getTrafficSources());
     }
 
-    @Operation(summary = "Получение статистики по времени, проведенному на сайте")
+    @Operation(summary = "Получение статистики по времени, проведенному на сайте", description = "Возвращает статистику по времени, проведенному на сайте")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Статистика успешно получена")
     })

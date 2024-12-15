@@ -4,6 +4,7 @@ import backend.model.Book;
 import backend.security.JwtUtil;
 import backend.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,7 +23,7 @@ public class BookController {
     private final BookService bookService;
     private final JwtUtil jwtUtil;
 
-    @Operation(summary = "Получить все книги")
+    @Operation(summary = "Получить все книги", description = "Возвращает список всех книг")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Книги успешно получены")
     })
@@ -31,25 +32,28 @@ public class BookController {
         return ResponseEntity.ok(bookService.getAllBooks());
     }
 
-    @Operation(summary = "Получить книгу по ID")
+    @Operation(summary = "Получить книгу по ID", description = "Возвращает книгу по указанному ID")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Книга успешно получена"),
             @ApiResponse(responseCode = "404", description = "Книга не найдена")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Book> getBookById(@PathVariable Long id) {
+    public ResponseEntity<Book> getBookById(@PathVariable @Parameter(description = "ID книги", required = true) Long id) {
         return bookService.getBookById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @Operation(summary = "Добавить книгу")
+    @Operation(summary = "Добавить книгу", description = "Добавляет новую книгу")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Книга успешно добавлена"),
             @ApiResponse(responseCode = "403", description = "Доступ запрещен")
     })
     @PostMapping
-    public ResponseEntity<Book> addBook(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Book book) {
+    public ResponseEntity<Book> addBook(
+            @RequestHeader("Authorization") @Parameter(description = "Токен авторизации", required = true) String authorizationHeader,
+            @RequestBody @Parameter(description = "Данные книги", required = true) Book book) {
+
         String token = authorizationHeader.substring(7); // Убираем "Bearer "
         String username = jwtUtil.getUsernameFromToken(token);
 
@@ -60,14 +64,17 @@ public class BookController {
         }
     }
 
-    @Operation(summary = "Удалить книгу по ID")
+    @Operation(summary = "Удалить книгу по ID", description = "Удаляет книгу по указанному ID")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Книга успешно удалена"),
             @ApiResponse(responseCode = "404", description = "Книга не найдена"),
             @ApiResponse(responseCode = "403", description = "Доступ запрещен")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBook(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long id) {
+    public ResponseEntity<Void> deleteBook(
+            @RequestHeader("Authorization") @Parameter(description = "Токен авторизации", required = true) String authorizationHeader,
+            @PathVariable @Parameter(description = "ID книги", required = true) Long id) {
+
         String token = authorizationHeader.substring(7); // Убираем "Bearer "
         String username = jwtUtil.getUsernameFromToken(token);
 
