@@ -30,7 +30,7 @@ services:
   frontend:
     build:
       context: ./ # Путь к директории с Dockerfile для фронтенда
-      dockerfile: /frontend/Dockerfile # Убедитесь, что у вас есть Dockerfile в этой директории
+      dockerfile: frontend/Dockerfile # Убедитесь, что у вас есть Dockerfile в этой директории
     container_name: frontend
     ports:
       - "3000:3000"  # Внешний порт 3000, внутренний 3000 (или другой порт, который использует ваше приложение)
