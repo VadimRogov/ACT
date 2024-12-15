@@ -2,7 +2,7 @@
 FROM maven:3.8.4-openjdk-17 AS build
 
 # Копируем все файлы проекта в контейнер
-COPY src/main/java/backend /usr/src/app
+COPY / /usr/src/app
 
 # Переходим в директорию проекта
 WORKDIR /usr/src/app
