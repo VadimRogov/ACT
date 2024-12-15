@@ -1,5 +1,6 @@
 package backend.service;
 
+import backend.dto.UserActivityLogRequest;
 import backend.model.UserActivity;
 import backend.repository.UserActivityRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,14 +16,14 @@ public class UserActivityService {
     private final UserActivityRepository userActivityRepository;
 
     // Логирование активности пользователя
-    public void logActivity(String userIp, String sessionId, String pageUrl, String eventType, String eventDetails, String referer) {
+    public void logActivity(UserActivityLogRequest request) {
         UserActivity activity = UserActivity.builder()
-                .userIp(userIp)
-                .sessionId(sessionId)
-                .pageUrl(pageUrl)
-                .eventType(eventType)
-                .eventDetails(eventDetails)
-                .referer(referer) // Сохраняем реферер
+                .userIp(request.getUserIp())
+                .sessionId(request.getSessionId())
+                .pageUrl(request.getPageUrl())
+                .eventType(request.getEventType())
+                .eventDetails(request.getEventDetails())
+                .referer(request.getReferer())
                 .timestamp(LocalDateTime.now())
                 .build();
 
@@ -47,7 +48,7 @@ public class UserActivityService {
     // Получение статистики по источникам трафика
     public List<Map<String, Object>> getTrafficSources() {
         return userActivityRepository.findAll().stream()
-                .filter(activity -> activity.getReferer() != null) // Фильтруем записи с реферером
+                .filter(activity -> activity.getReferer() != null)
                 .collect(Collectors.groupingBy(UserActivity::getReferer))
                 .entrySet().stream()
                 .map(entry -> {

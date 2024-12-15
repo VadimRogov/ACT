@@ -1,5 +1,6 @@
 package backend.controller;
 
+import backend.dto.UserActivityLogRequest;
 import backend.service.UserActivityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,18 +22,12 @@ public class UserActivityController {
 
     @Operation(summary = "Логирование активности пользователя")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Активность успешно залогирована")
+            @ApiResponse(responseCode = "200", description = "Активность успешно залогирована"),
+            @ApiResponse(responseCode = "400", description = "Некорректные данные запроса")
     })
     @PostMapping("/log")
-    public ResponseEntity<Void> logActivity(
-            @RequestBody String userIp,
-            @RequestBody String sessionId,
-            @RequestBody String pageUrl,
-            @RequestBody String eventType,
-            @RequestBody String eventDetails,
-            @RequestHeader(value = "Referer", required = false) String referer) {
-
-        userActivityService.logActivity(userIp, sessionId, pageUrl, eventType, eventDetails, referer);
+    public ResponseEntity<Void> logActivity(@RequestBody UserActivityLogRequest request) {
+        userActivityService.logActivity(request);
         return ResponseEntity.ok().build();
     }
 

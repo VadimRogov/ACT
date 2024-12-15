@@ -11,7 +11,6 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class BookService {
-
     private final BookRepository bookRepository;
 
     public List<Book> getAllBooks() {

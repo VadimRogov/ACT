@@ -33,8 +33,10 @@ public class AdminController {
     })
     @PostMapping("/login")
     public ResponseEntity<?> login(
-            @Parameter(description = "Имя пользователя", required = true) @RequestBody String username,
-            @Parameter(description = "Пароль", required = true) @RequestBody String password) {
+            @RequestBody LoginRequest loginRequest) {
+
+        String username = loginRequest.getUsername();
+        String password = loginRequest.getPassword();
 
         if (adminService.authenticate(username, password)) {
             String token = jwtUtil.generateToken(username);
@@ -53,14 +55,68 @@ public class AdminController {
     })
     @PatchMapping("/change-password")
     public ResponseEntity<?> changePassword(
-            @Parameter(description = "Имя пользователя", required = true) @RequestBody String username,
-            @Parameter(description = "Старый пароль", required = true) @RequestBody String oldPassword,
-            @Parameter(description = "Новый пароль", required = true) @RequestBody String newPassword) {
+            @RequestBody ChangePasswordRequest changePasswordRequest) {
+
+        String username = changePasswordRequest.getUsername();
+        String oldPassword = changePasswordRequest.getOldPassword();
+        String newPassword = changePasswordRequest.getNewPassword();
 
         if (adminService.changePassword(username, oldPassword, newPassword)) {
             return ResponseEntity.ok("Password changed successfully");
         } else {
             return ResponseEntity.status(403).body("Incorrect old password");
+        }
+    }
+
+    // Вспомогательные классы для запросов
+    public static class LoginRequest {
+        private String username;
+        private String password;
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+    }
+
+    public static class ChangePasswordRequest {
+        private String username;
+        private String oldPassword;
+        private String newPassword;
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getOldPassword() {
+            return oldPassword;
+        }
+
+        public void setOldPassword(String oldPassword) {
+            this.oldPassword = oldPassword;
+        }
+
+        public String getNewPassword() {
+            return newPassword;
+        }
+
+        public void setNewPassword(String newPassword) {
+            this.newPassword = newPassword;
         }
     }
 }

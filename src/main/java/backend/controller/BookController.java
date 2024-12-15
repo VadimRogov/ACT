@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,6 @@ import java.util.List;
 @RequestMapping("/api/books")
 @RequiredArgsConstructor
 public class BookController {
-
     private final BookService bookService;
     private final JwtUtil jwtUtil;
 
@@ -53,11 +53,10 @@ public class BookController {
         String token = authorizationHeader.substring(7); // Убираем "Bearer "
         String username = jwtUtil.getUsernameFromToken(token);
 
-        // Проверяем, что пользователь авторизован (например, проверяем, что username соответствует администратору)
         if ("admin".equals(username)) {
             return ResponseEntity.ok(bookService.addBook(book));
         } else {
-            return ResponseEntity.status(403).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
 
@@ -72,12 +71,11 @@ public class BookController {
         String token = authorizationHeader.substring(7); // Убираем "Bearer "
         String username = jwtUtil.getUsernameFromToken(token);
 
-        // Проверяем, что пользователь авторизован (например, проверяем, что username соответствует администратору)
         if ("admin".equals(username)) {
             bookService.deleteBook(id);
             return ResponseEntity.noContent().build();
         } else {
-            return ResponseEntity.status(403).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
 }

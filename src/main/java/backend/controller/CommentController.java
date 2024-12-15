@@ -39,8 +39,7 @@ public class CommentController {
     @PostMapping
     public ResponseEntity<Comment> addComment(
             @RequestHeader("Authorization") String authorizationHeader,
-            @Parameter(description = "Содержимое комментария") @RequestBody String content,
-            @Parameter(description = "Автор комментария") @RequestBody String author) {
+            @RequestBody Comment comment) {
 
         // Извлекаем токен из заголовка
         String token = authorizationHeader.substring(7); // Убираем "Bearer "
@@ -48,7 +47,7 @@ public class CommentController {
 
         // Проверяем, что пользователь авторизован
         if ("admin".equals(username)) {
-            return ResponseEntity.ok(commentService.addComment(content, author));
+            return ResponseEntity.ok(commentService.addComment(comment.getContent(), comment.getAuthor()));
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -73,8 +72,7 @@ public class CommentController {
     public ResponseEntity<Comment> updateComment(
             @RequestHeader("Authorization") String authorizationHeader,
             @Parameter(description = "ID комментария") @PathVariable Long id,
-            @Parameter(description = "Новое содержимое комментария") @RequestBody String content,
-            @Parameter(description = "Новый автор комментария") @RequestBody String author) {
+            @RequestBody Comment comment) {
 
         // Извлекаем токен из заголовка
         String token = authorizationHeader.substring(7); // Убираем "Bearer "
@@ -82,7 +80,7 @@ public class CommentController {
 
         // Проверяем, что пользователь авторизован
         if ("admin".equals(username)) {
-            return ResponseEntity.ok(commentService.updateComment(id, content, author));
+            return ResponseEntity.ok(commentService.updateComment(id, comment.getContent(), comment.getAuthor()));
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }

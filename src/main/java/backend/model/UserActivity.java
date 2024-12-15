@@ -32,7 +32,7 @@ public class UserActivity {
     @Column(name = "event_details")
     private String eventDetails; // Дополнительные данные о событии
 
-    @Column(name = "referer") // Добавляем поле для хранения реферера
+    @Column(name = "referer")
     private String referer; // Источник трафика (откуда пользователь перешел)
 
     @Column(name = "timestamp")
