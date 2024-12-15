@@ -33,7 +33,7 @@ services:
       dockerfile: Dockerfile  # Убедитесь, что у вас есть Dockerfile в этой директории
     container_name: frontend
     ports:
-      - "80:80"  # Внешний порт 80, внутренний 80
+      - "3000:3000"  # Внешний порт 80, внутренний 80
     volumes:
       - frontend-build:/usr/share/nginx/html  # Монтируем том для доступа к собранным файлам
 
