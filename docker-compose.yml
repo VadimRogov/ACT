@@ -11,24 +11,21 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
-      - "5435:5432"  # Изменен внешний порт на 5435
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - "5435:5432"  # Внешний порт 5435, внутренний 5432
 
   backend:
     build:
-      context: ./  # Проверьте правильность пути
-      dockerfile: src/main/java/backend/Dockerfile
+      context: ./
+      dockerfile: Dockerfile
     container_name: backend
     depends_on:
       - db
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres  # Используйте внутренний порт 5432
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 1270
+    ports:
+      - "8081:8080"  # Внешний порт 8080, внутренний 8080
 
   # nginx:
   #   image: nginx:latest
