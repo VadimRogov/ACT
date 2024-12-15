@@ -12,5 +12,5 @@ WORKDIR /usr/src/app/frontend/Act-books
 
 # Устанавливаем зависимости и собираем фронтенд
 RUN npm install && npm run build
-RUN npm start
+
 CMD ["tail", "-f", "/dev/null"]

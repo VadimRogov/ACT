@@ -35,15 +35,5 @@ services:
     ports:
       - "3000:3000"  # Внешний порт 3000, внутренний 3000 (или другой порт, который использует ваше приложение)
 
-  # nginx:
-  #   image: nginx:latest
-  #   container_name: nginx
-  #   ports:
-  #     - "80:80"
-  #   volumes:
-  #     - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-  #   depends_on:
-  #     - backend
-
 volumes:
   db_data:
