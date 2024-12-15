@@ -1,11 +1,11 @@
-# Используем образ Node.js для сборки приложения
+# Используем образ Node.js на основе Alpine
 FROM node:23.4.0-alpine3.20 AS frontend-build
-
-# Устанавливаем git в контейнере
-RUN apk add --no-cache git
 
 # Устанавливаем рабочую директорию
 WORKDIR /usr/src/app/frontend
+
+# Устанавливаем git
+RUN apk add --no-cache git
 
 # Клонируем репозиторий фронтенда
 RUN git clone https://github.com/BaronGalileo/Act-books .
