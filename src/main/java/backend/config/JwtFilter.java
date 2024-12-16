@@ -1,4 +1,4 @@
-package backend.filter;
+package backend.config;
 
 import backend.security.JwtUtil;
 import jakarta.servlet.FilterChain;

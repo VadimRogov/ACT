@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -52,13 +53,15 @@ public class BookController {
     @PostMapping
     public ResponseEntity<Book> addBook(
             @RequestHeader("Authorization") @Parameter(description = "Токен авторизации", required = true) String authorizationHeader,
-            @RequestBody @Parameter(description = "Данные книги", required = true) Book book) {
+            @RequestPart("book") @Parameter(description = "Данные книги", required = true) Book book,
+            @RequestPart(value = "cover", required = false) @Parameter(description = "Обложка книги") MultipartFile coverFile,
+            @RequestPart(value = "bookImage", required = false) @Parameter(description = "Изображение книги") MultipartFile bookImageFile) {
 
         String token = authorizationHeader.substring(7); // Убираем "Bearer "
         String username = jwtUtil.getUsernameFromToken(token);
 
         if ("admin".equals(username)) {
-            return ResponseEntity.ok(bookService.addBook(book));
+            return ResponseEntity.ok(bookService.addBook(book, coverFile, bookImageFile));
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }

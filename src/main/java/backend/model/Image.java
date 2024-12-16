@@ -16,8 +16,9 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "book_id", nullable = false)
-    private Long bookId; // Идентификатор книги
+    @OneToOne
+    @JoinColumn(name = "book_id", referencedColumnName = "id", nullable = false)
+    private Book book; // Связь с книгой
 
     @Lob
     @Column(name = "image_data", nullable = false)
