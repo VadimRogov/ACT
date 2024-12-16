@@ -33,12 +33,12 @@ public class BookService {
 
         // Сохраняем изображения и связываем их с книгой
         if (coverFile != null && !coverFile.isEmpty()) {
-            Image cover = imageService.createImage(savedBook.getId(), ImageType.COVER, coverFile);
+            Image cover = imageService.createImage(book, ImageType.COVER, coverFile);
             savedBook.setCover(cover);
         }
 
         if (bookImageFile != null && !bookImageFile.isEmpty()) {
-            Image bookImage = imageService.createImage(savedBook.getId(), ImageType.BOOK_IMAGE, bookImageFile);
+            Image bookImage = imageService.createImage(book, ImageType.BOOK_IMAGE, bookImageFile);
             savedBook.setBookImage(bookImage);
         }
 
@@ -46,7 +46,22 @@ public class BookService {
         return bookRepository.save(savedBook);
     }
 
+    @Transactional
     public void deleteBook(Long id) {
-        bookRepository.deleteById(id);
+        // Найти книгу по ID
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Book not found"));
+
+        // Удалить связанные изображения
+        if (book.getCover() != null) {
+            imageService.deleteImage(book, ImageType.COVER);
+        }
+
+        if (book.getBookImage() != null) {
+            imageService.deleteImage(book, ImageType.BOOK_IMAGE);
+        }
+
+        // Удалить книгу
+        bookRepository.delete(book);
     }
 }

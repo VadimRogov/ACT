@@ -1,5 +1,6 @@
 package backend.service;
 
+import backend.model.Book;
 import backend.model.Image;
 import backend.model.ImageType;
 import backend.repository.ImageRepository;
@@ -16,12 +17,12 @@ public class ImageService {
     private final ImageRepository imageRepository;
 
     @Transactional
-    public Image createImage(Long bookId, ImageType imageType, MultipartFile file) {
+    public Image createImage(Book book, ImageType imageType, MultipartFile file) {
         try {
             byte[] imageData = file.getBytes(); // Получаем данные изображения
 
             Image image = Image.builder()
-                    .bookId(bookId)
+                    .book(book) // Устанавливаем связь с книгой
                     .imageType(imageType)
                     .imageData(imageData) // Сохраняем данные изображения
                     .build();
@@ -34,12 +35,12 @@ public class ImageService {
     }
 
     @Transactional
-    public Image updateImage(Long bookId, ImageType imageType, MultipartFile file) {
+    public Image updateImage(Book book, ImageType imageType, MultipartFile file) {
         try {
             byte[] imageData = file.getBytes(); // Получаем данные нового изображения
 
             // Найти существующее изображение
-            Image existingImage = imageRepository.findByBookIdAndImageType(bookId, imageType)
+            Image existingImage = imageRepository.findByBookAndImageType(book, imageType)
                     .orElseThrow(() -> new RuntimeException("Image not found"));
 
             // Обновляем данные изображения
@@ -53,16 +54,16 @@ public class ImageService {
     }
 
     @Transactional
-    public void deleteImage(Long bookId, ImageType imageType) {
+    public void deleteImage(Book book, ImageType imageType) {
         // Найти изображение и удалить его
-        Image existingImage = imageRepository.findByBookIdAndImageType(bookId, imageType)
+        Image existingImage = imageRepository.findByBookAndImageType(book, imageType)
                 .orElseThrow(() -> new RuntimeException("Image not found"));
 
         imageRepository.delete(existingImage);
     }
 
-    public byte[] getImageByBookIdAndType(Long bookId, ImageType imageType) {
-        Image image = imageRepository.findByBookIdAndImageType(bookId, imageType)
+    public byte[] getImageByBookAndType(Book book, ImageType imageType) {
+        Image image = imageRepository.findByBookAndImageType(book, imageType)
                 .orElseThrow(() -> new RuntimeException("Image not found"));
         return image.getImageData(); // Возвращаем данные изображения
     }

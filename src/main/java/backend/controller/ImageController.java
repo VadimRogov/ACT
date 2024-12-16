@@ -1,13 +1,12 @@
 package backend.controller;
 
-import backend.model.Image;
+import backend.model.Book;
 import backend.model.ImageType;
+import backend.service.BookService;
 import backend.service.ImageService;
 import backend.security.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class ImageController {
     private final ImageService imageService;
+    private final BookService bookService;
     private final JwtUtil jwtUtil;
 
     @Operation(summary = "Сохранение изображения", description = "Сохраняет новое изображение для книги")
@@ -42,7 +42,9 @@ public class ImageController {
         String username = jwtUtil.getUsernameFromToken(token);
 
         if ("admin".equals(username)) {
-            return ResponseEntity.ok(imageService.createImage(bookId, imageType, file));
+            Book book = bookService.getBookById(bookId)
+                    .orElseThrow(() -> new RuntimeException("Book not found"));
+            return ResponseEntity.ok(imageService.createImage(book, imageType, file));
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -65,7 +67,9 @@ public class ImageController {
         String username = jwtUtil.getUsernameFromToken(token);
 
         if ("admin".equals(username)) {
-            return ResponseEntity.ok(imageService.updateImage(bookId, imageType, file));
+            Book book = bookService.getBookById(bookId)
+                    .orElseThrow(() -> new RuntimeException("Book not found"));
+            return ResponseEntity.ok(imageService.updateImage(book, imageType, file));
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -87,7 +91,9 @@ public class ImageController {
         String username = jwtUtil.getUsernameFromToken(token);
 
         if ("admin".equals(username)) {
-            imageService.deleteImage(bookId, imageType);
+            Book book = bookService.getBookById(bookId)
+                    .orElseThrow(() -> new RuntimeException("Book not found"));
+            imageService.deleteImage(book, imageType);
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -111,7 +117,9 @@ public class ImageController {
         String username = jwtUtil.getUsernameFromToken(token);
 
         if ("admin".equals(username)) {
-            byte[] imageData = imageService.getImageByBookIdAndType(bookId, imageType);
+            Book book = bookService.getBookById(bookId)
+                    .orElseThrow(() -> new RuntimeException("Book not found"));
+            byte[] imageData = imageService.getImageByBookAndType(book, imageType);
             return ResponseEntity.ok()
                     .contentType(MediaType.IMAGE_PNG)
                     .body(imageData);

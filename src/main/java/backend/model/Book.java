@@ -25,11 +25,9 @@ public class Book {
     @Column(name = "url", nullable = false)
     private String url;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER) // Каскадное удаление и жадняя загрузка
-    @JoinColumn(name = "cover_id", referencedColumnName = "id")
+    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private Image cover;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER) // Каскадное удаление и жадняя загрузка
-    @JoinColumn(name = "book_image_id", referencedColumnName = "id")
+    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private Image bookImage;
 }
