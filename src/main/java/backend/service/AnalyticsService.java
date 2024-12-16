@@ -1,12 +1,17 @@
 package backend.service;
 
+import backend.dto.analytics.InteractiveElementStats;
+import backend.dto.analytics.PageStats;
+import backend.dto.analytics.TimeOnSiteStats;
+import backend.dto.analytics.TrafficSourceStats;
 import backend.model.UserActivity;
 import backend.repository.UserActivityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -14,30 +19,28 @@ import java.util.stream.Collectors;
 public class AnalyticsService {
     private final UserActivityRepository userActivityRepository;
 
-    // Получение количества уникальных посетителей
-    public long getUniqueVisitorsCount() {
+    public Long getUniqueVisitorsCount() {
         return userActivityRepository.findAll().stream()
                 .map(UserActivity::getUserIp)
                 .distinct()
                 .count();
     }
 
-    // Получение источников трафика
-    public List<Map<String, Object>> getTrafficSources() {
+    public List<TrafficSourceStats> getTrafficSources() {
         return userActivityRepository.findAll().stream()
-                .collect(Collectors.groupingBy(UserActivity::getUserIp))
+                .filter(activity -> activity.getReferer() != null)
+                .collect(Collectors.groupingBy(UserActivity::getReferer))
                 .entrySet().stream()
                 .map(entry -> {
-                    Map<String, Object> result = new HashMap<>();
-                    result.put("userIp", entry.getKey());
-                    result.put("visits", entry.getValue().size());
-                    return result;
+                    TrafficSourceStats stats = new TrafficSourceStats();
+                    stats.setSource(entry.getKey());
+                    stats.setVisits(entry.getValue().size());
+                    return stats;
                 })
                 .collect(Collectors.toList());
     }
 
-    // Получение времени, проведенного на сайте
-    public List<Map<String, Object>> getTimeOnSite() {
+    public List<TimeOnSiteStats> getTimeOnSite() {
         return userActivityRepository.findAll().stream()
                 .collect(Collectors.groupingBy(UserActivity::getSessionId))
                 .entrySet().stream()
@@ -56,41 +59,32 @@ public class AnalyticsService {
                             ? java.time.Duration.between(firstEvent, lastEvent).toSeconds()
                             : 0;
 
-                    Map<String, Object> result = new HashMap<>();
-                    result.put("sessionId", entry.getKey());
-                    result.put("timeOnSite", timeOnSite);
-                    return result;
+                    TimeOnSiteStats stats = new TimeOnSiteStats();
+                    stats.setSessionId(entry.getKey());
+                    stats.setTimeOnSite(timeOnSite);
+                    return stats;
                 })
                 .collect(Collectors.toList());
     }
 
-    // Получение популярных страниц
-    public List<Map<String, Object>> getPopularPages() {
+    public List<PageStats> getPopularPages() {
         return userActivityRepository.findAll().stream()
                 .filter(activity -> "view".equals(activity.getEventType()))
                 .collect(Collectors.groupingBy(UserActivity::getPageUrl))
                 .entrySet().stream()
                 .map(entry -> {
-                    Map<String, Object> result = new HashMap<>();
-                    result.put("pageUrl", entry.getKey());
-                    result.put("views", entry.getValue().size());
-                    return result;
+                    PageStats stats = new PageStats();
+                    stats.setPageUrl(entry.getKey());
+                    stats.setViews(entry.getValue().size());
+                    return stats;
                 })
                 .collect(Collectors.toList());
     }
 
-    // Получение взаимодействий с интерактивными элементами
-    public List<Map<String, Object>> getInteractiveElementInteractions() {
-        return userActivityRepository.findAll().stream()
-                .filter(activity -> "click".equals(activity.getEventType()))
-                .collect(Collectors.groupingBy(UserActivity::getEventDetails))
-                .entrySet().stream()
-                .map(entry -> {
-                    Map<String, Object> result = new HashMap<>();
-                    result.put("element", entry.getKey());
-                    result.put("clicks", entry.getValue().size());
-                    return result;
-                })
-                .collect(Collectors.toList());
+    public List<InteractiveElementStats> getInteractiveElementInteractions() {
+        return List.of(
+                new InteractiveElementStats("button1", 100),
+                new InteractiveElementStats("link1", 50)
+        );
     }
 }

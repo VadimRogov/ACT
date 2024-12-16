@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +30,9 @@ public class AdminController {
 
     @Operation(summary = "Вход администратора", description = "Авторизация администратора с использованием имени пользователя и пароля")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Успешный вход"),
+            @ApiResponse(responseCode = "200", description = "Успешный вход",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LoginResponse.class))),
             @ApiResponse(responseCode = "401", description = "Неверные учетные данные")
     })
     @PostMapping("/login")
@@ -40,8 +44,7 @@ public class AdminController {
 
         if (adminService.authenticate(username, password)) {
             String token = jwtUtil.generateToken(username);
-            Map<String, String> response = new HashMap<>();
-            response.put("token", token);
+            LoginResponse response = new LoginResponse(token);
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.status(401).body("Invalid credentials");
@@ -68,7 +71,7 @@ public class AdminController {
         }
     }
 
-    // Вспомогательные классы для запросов
+    // Вспомогательные классы для запросов и ответов
     public static class LoginRequest {
         @Parameter(description = "Имя пользователя", required = true)
         private String username;
@@ -125,6 +128,23 @@ public class AdminController {
 
         public void setNewPassword(String newPassword) {
             this.newPassword = newPassword;
+        }
+    }
+
+    public static class LoginResponse {
+        @Schema(description = "JWT токен", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
+        private String token;
+
+        public LoginResponse(String token) {
+            this.token = token;
+        }
+
+        public String getToken() {
+            return token;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
         }
     }
 }

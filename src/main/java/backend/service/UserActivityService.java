@@ -1,6 +1,9 @@
 package backend.service;
 
 import backend.dto.UserActivityLogRequest;
+import backend.dto.userActivy.PageStats;
+import backend.dto.userActivy.TrafficSourceStats;
+import backend.dto.userActivy.TimeOnSiteStats;
 import backend.model.UserActivity;
 import backend.repository.UserActivityRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,37 +34,37 @@ public class UserActivityService {
     }
 
     // Получение статистики по популярным страницам
-    public List<Map<String, Object>> getPopularPages() {
+    public List<PageStats> getPopularPages() {
         return userActivityRepository.findAll().stream()
                 .filter(activity -> "view".equals(activity.getEventType()))
                 .collect(Collectors.groupingBy(UserActivity::getPageUrl))
                 .entrySet().stream()
                 .map(entry -> {
-                    Map<String, Object> result = new HashMap<>();
-                    result.put("pageUrl", entry.getKey());
-                    result.put("views", entry.getValue().size());
-                    return result;
+                    PageStats stats = new PageStats();
+                    stats.setPageUrl(entry.getKey());
+                    stats.setViews(entry.getValue().size());
+                    return stats;
                 })
                 .collect(Collectors.toList());
     }
 
     // Получение статистики по источникам трафика
-    public List<Map<String, Object>> getTrafficSources() {
+    public List<TrafficSourceStats> getTrafficSources() {
         return userActivityRepository.findAll().stream()
                 .filter(activity -> activity.getReferer() != null)
                 .collect(Collectors.groupingBy(UserActivity::getReferer))
                 .entrySet().stream()
                 .map(entry -> {
-                    Map<String, Object> result = new HashMap<>();
-                    result.put("referer", entry.getKey());
-                    result.put("visits", entry.getValue().size());
-                    return result;
+                    TrafficSourceStats stats = new TrafficSourceStats();
+                    stats.setReferer(entry.getKey());
+                    stats.setVisits(entry.getValue().size());
+                    return stats;
                 })
                 .collect(Collectors.toList());
     }
 
     // Получение статистики по времени, проведенному на сайте
-    public List<Map<String, Object>> getTimeOnSite() {
+    public List<TimeOnSiteStats> getTimeOnSite() {
         return userActivityRepository.findAll().stream()
                 .collect(Collectors.groupingBy(UserActivity::getSessionId))
                 .entrySet().stream()
@@ -80,10 +83,10 @@ public class UserActivityService {
                             ? java.time.Duration.between(firstEvent, lastEvent).toSeconds()
                             : 0;
 
-                    Map<String, Object> result = new HashMap<>();
-                    result.put("sessionId", entry.getKey());
-                    result.put("timeOnSite", timeOnSite);
-                    return result;
+                    TimeOnSiteStats stats = new TimeOnSiteStats();
+                    stats.setSessionId(entry.getKey());
+                    stats.setTimeOnSite(timeOnSite);
+                    return stats;
                 })
                 .collect(Collectors.toList());
     }
