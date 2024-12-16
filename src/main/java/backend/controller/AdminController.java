@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "AdminController", description = "Контроллер для авторизации администратора и смены пароля")
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class AdminController {
 
     private final AdminService adminService;

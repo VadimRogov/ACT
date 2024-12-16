@@ -22,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/api/images")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ImageController {
     private final ImageService imageService;
     private final JwtUtil jwtUtil;

@@ -19,7 +19,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/books")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class BookController {
     private final BookService bookService;
     private final JwtUtil jwtUtil;
