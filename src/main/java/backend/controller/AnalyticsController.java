@@ -26,6 +26,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/analytics")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class AnalyticsController {
     private final AnalyticsService analyticsService;
     private final JwtUtil jwtUtil;

@@ -23,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/activity")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UserActivityController {
 
     private final UserActivityService userActivityService;
