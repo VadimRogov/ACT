@@ -1,22 +1,25 @@
 package backend.service;
 
 import backend.model.Book;
-import backend.model.Image;
 import backend.model.ImageType;
 import backend.repository.BookRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class BookService {
     private final BookRepository bookRepository;
+    @Autowired
     private final ImageService imageService;
+
+    public BookService(BookRepository bookRepository, ImageService imageService) {
+        this.bookRepository = bookRepository;
+        this.imageService = imageService;
+    }
 
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
@@ -27,21 +30,9 @@ public class BookService {
     }
 
     @Transactional
-    public Book addBook(Book book, MultipartFile coverFile, MultipartFile bookImageFile) {
+    public Book addBook(Book book) {
         // Сохраняем книгу
         Book savedBook = bookRepository.save(book);
-
-        // Сохраняем изображения и связываем их с книгой
-        if (coverFile != null && !coverFile.isEmpty()) {
-            Image cover = imageService.createImage(book, ImageType.COVER, coverFile);
-            savedBook.setCover(cover);
-        }
-
-        if (bookImageFile != null && !bookImageFile.isEmpty()) {
-            Image bookImage = imageService.createImage(book, ImageType.BOOK_IMAGE, bookImageFile);
-            savedBook.setBookImage(bookImage);
-        }
-
         // Сохраняем обновленную книгу
         return bookRepository.save(savedBook);
     }

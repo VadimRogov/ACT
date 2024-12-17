@@ -19,10 +19,14 @@ import java.util.List;
 @Tag(name = "BookController", description = "Контроллер для работы с книгами")
 @RestController
 @RequestMapping("/api/books")
-@RequiredArgsConstructor
 public class BookController {
     private final BookService bookService;
     private final JwtUtil jwtUtil;
+
+    public BookController(BookService bookService, JwtUtil jwtUtil) {
+        this.bookService = bookService;
+        this.jwtUtil = jwtUtil;
+    }
 
     @Operation(summary = "Получить все книги", description = "Возвращает список всех книг")
     @ApiResponses({
@@ -53,15 +57,14 @@ public class BookController {
     @PostMapping
     public ResponseEntity<Book> addBook(
             @RequestHeader("Authorization") @Parameter(description = "Токен авторизации", required = true) String authorizationHeader,
-            @RequestPart("book") @Parameter(description = "Данные книги", required = true) Book book,
-            @RequestPart(value = "cover", required = false) @Parameter(description = "Обложка книги") MultipartFile coverFile,
-            @RequestPart(value = "bookImage", required = false) @Parameter(description = "Изображение книги") MultipartFile bookImageFile) {
+            @RequestPart("book") @Parameter(description = "Данные книги", required = true) Book book)
+    {
 
         String token = authorizationHeader.substring(7); // Убираем "Bearer "
         String username = jwtUtil.getUsernameFromToken(token);
 
         if ("admin".equals(username)) {
-            return ResponseEntity.ok(bookService.addBook(book, coverFile, bookImageFile));
+            return ResponseEntity.ok(bookService.addBook(book));
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }

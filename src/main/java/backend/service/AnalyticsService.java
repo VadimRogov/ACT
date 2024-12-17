@@ -1,23 +1,24 @@
 package backend.service;
 
 import backend.dto.analytics.InteractiveElementStats;
-import backend.dto.analytics.PageStats;
-import backend.dto.analytics.TimeOnSiteStats;
+import backend.dto.analytics.PageStatsAnalytics;
+import backend.dto.analytics.TimeOnSiteStatsAnalytics;
 import backend.dto.analytics.TrafficSourceStats;
 import backend.model.UserActivity;
 import backend.repository.UserActivityRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class AnalyticsService {
     private final UserActivityRepository userActivityRepository;
+
+    public AnalyticsService(UserActivityRepository userActivityRepository) {
+        this.userActivityRepository = userActivityRepository;
+    }
 
     public Long getUniqueVisitorsCount() {
         return userActivityRepository.findAll().stream()
@@ -33,14 +34,14 @@ public class AnalyticsService {
                 .entrySet().stream()
                 .map(entry -> {
                     TrafficSourceStats stats = new TrafficSourceStats();
-                    stats.setSource(entry.getKey());
+                    stats.setSource(entry.getKey()); // Используем setSource
                     stats.setVisits(entry.getValue().size());
                     return stats;
                 })
                 .collect(Collectors.toList());
     }
 
-    public List<TimeOnSiteStats> getTimeOnSite() {
+    public List<TimeOnSiteStatsAnalytics> getTimeOnSite() {
         return userActivityRepository.findAll().stream()
                 .collect(Collectors.groupingBy(UserActivity::getSessionId))
                 .entrySet().stream()
@@ -59,7 +60,7 @@ public class AnalyticsService {
                             ? java.time.Duration.between(firstEvent, lastEvent).toSeconds()
                             : 0;
 
-                    TimeOnSiteStats stats = new TimeOnSiteStats();
+                    TimeOnSiteStatsAnalytics stats = new TimeOnSiteStatsAnalytics();
                     stats.setSessionId(entry.getKey());
                     stats.setTimeOnSite(timeOnSite);
                     return stats;
@@ -67,13 +68,13 @@ public class AnalyticsService {
                 .collect(Collectors.toList());
     }
 
-    public List<PageStats> getPopularPages() {
+    public List<PageStatsAnalytics> getPopularPages() {
         return userActivityRepository.findAll().stream()
                 .filter(activity -> "view".equals(activity.getEventType()))
                 .collect(Collectors.groupingBy(UserActivity::getPageUrl))
                 .entrySet().stream()
                 .map(entry -> {
-                    PageStats stats = new PageStats();
+                    PageStatsAnalytics stats = new PageStatsAnalytics();
                     stats.setPageUrl(entry.getKey());
                     stats.setViews(entry.getValue().size());
                     return stats;

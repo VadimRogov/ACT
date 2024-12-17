@@ -1,12 +1,11 @@
 package backend.service;
 
 import backend.dto.UserActivityLogRequest;
-import backend.dto.userActivy.PageStats;
-import backend.dto.userActivy.TrafficSourceStats;
-import backend.dto.userActivy.TimeOnSiteStats;
+import backend.dto.userActivy.PageStatsUserActivity;
+import backend.dto.userActivy.TimeOnSiteStatsUserActivity;
+import backend.dto.userActivy.TrafficSourceStatsUserActivity;
 import backend.model.UserActivity;
 import backend.repository.UserActivityRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,9 +13,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class UserActivityService {
     private final UserActivityRepository userActivityRepository;
+
+    public UserActivityService(UserActivityRepository userActivityRepository) {
+        this.userActivityRepository = userActivityRepository;
+    }
 
     // Логирование активности пользователя
     public void logActivity(UserActivityLogRequest request) {
@@ -34,13 +36,13 @@ public class UserActivityService {
     }
 
     // Получение статистики по популярным страницам
-    public List<PageStats> getPopularPages() {
+    public List<PageStatsUserActivity> getPopularPages() {
         return userActivityRepository.findAll().stream()
                 .filter(activity -> "view".equals(activity.getEventType()))
                 .collect(Collectors.groupingBy(UserActivity::getPageUrl))
                 .entrySet().stream()
                 .map(entry -> {
-                    PageStats stats = new PageStats();
+                    PageStatsUserActivity stats = new PageStatsUserActivity();
                     stats.setPageUrl(entry.getKey());
                     stats.setViews(entry.getValue().size());
                     return stats;
@@ -48,14 +50,14 @@ public class UserActivityService {
                 .collect(Collectors.toList());
     }
 
-    // Получение статистики по источникам трафика
-    public List<TrafficSourceStats> getTrafficSources() {
+   // Получение статистики по источникам трафика
+    public List<TrafficSourceStatsUserActivity> getTrafficSources() {
         return userActivityRepository.findAll().stream()
                 .filter(activity -> activity.getReferer() != null)
                 .collect(Collectors.groupingBy(UserActivity::getReferer))
                 .entrySet().stream()
                 .map(entry -> {
-                    TrafficSourceStats stats = new TrafficSourceStats();
+                    TrafficSourceStatsUserActivity stats = new TrafficSourceStatsUserActivity();
                     stats.setReferer(entry.getKey());
                     stats.setVisits(entry.getValue().size());
                     return stats;
@@ -63,8 +65,7 @@ public class UserActivityService {
                 .collect(Collectors.toList());
     }
 
-    // Получение статистики по времени, проведенному на сайте
-    public List<TimeOnSiteStats> getTimeOnSite() {
+    public List<TimeOnSiteStatsUserActivity> getTimeOnSite() {
         return userActivityRepository.findAll().stream()
                 .collect(Collectors.groupingBy(UserActivity::getSessionId))
                 .entrySet().stream()
@@ -83,7 +84,7 @@ public class UserActivityService {
                             ? java.time.Duration.between(firstEvent, lastEvent).toSeconds()
                             : 0;
 
-                    TimeOnSiteStats stats = new TimeOnSiteStats();
+                    TimeOnSiteStatsUserActivity stats = new TimeOnSiteStatsUserActivity();
                     stats.setSessionId(entry.getKey());
                     stats.setTimeOnSite(timeOnSite);
                     return stats;

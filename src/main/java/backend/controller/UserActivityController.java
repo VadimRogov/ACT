@@ -1,8 +1,9 @@
 package backend.controller;
 
 import backend.dto.UserActivityLogRequest;
-import backend.dto.userActivy.PageStats;
-import backend.dto.userActivy.TrafficSourceStats;
+import backend.dto.userActivy.PageStatsUserActivity;
+import backend.dto.userActivy.TimeOnSiteStatsUserActivity;
+import backend.dto.userActivy.TrafficSourceStatsUserActivity;
 import backend.dto.userActivy.TimeOnSiteStats;
 import backend.service.UserActivityService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,7 +14,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,10 +22,13 @@ import java.util.List;
 @Tag(name = "UserActivityController", description = "Контроллер для сбора и анализа активности пользователей")
 @RestController
 @RequestMapping("/api/activity")
-@RequiredArgsConstructor
 public class UserActivityController {
 
     private final UserActivityService userActivityService;
+
+    public UserActivityController(UserActivityService userActivityService) {
+        this.userActivityService = userActivityService;
+    }
 
     // Логирование активности пользователя
     @Operation(summary = "Логирование активности пользователя", description = "Логирует активность пользователя на сайте")
@@ -48,11 +51,11 @@ public class UserActivityController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Статистика успешно получена",
                     content = @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = PageStats.class))))
+                            array = @ArraySchema(schema = @Schema(implementation = PageStatsUserActivity.class))))
     })
     @GetMapping("/analytics/popular-pages")
-    public ResponseEntity<List<PageStats>> getPopularPages() {
-        List<PageStats> pages = userActivityService.getPopularPages();
+    public ResponseEntity<List<PageStatsUserActivity>> getPopularPages() {
+        List<PageStatsUserActivity> pages = userActivityService.getPopularPages();
         return ResponseEntity.ok(pages);
     }
 
@@ -61,24 +64,25 @@ public class UserActivityController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Статистика успешно получена",
                     content = @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = TrafficSourceStats.class))))
+                            array = @ArraySchema(schema = @Schema(implementation = TrafficSourceStatsUserActivity.class))))
     })
     @GetMapping("/analytics/traffic-sources")
-    public ResponseEntity<List<TrafficSourceStats>> getTrafficSources() {
-        List<TrafficSourceStats> sources = userActivityService.getTrafficSources();
+    public ResponseEntity<List<TrafficSourceStatsUserActivity>> getTrafficSources() {
+        List<TrafficSourceStatsUserActivity> sources = userActivityService.getTrafficSources();
         return ResponseEntity.ok(sources);
     }
+
 
     // Получение статистики по времени, проведенному на сайте
     @Operation(summary = "Получение статистики по времени, проведенному на сайте", description = "Возвращает статистику по времени, проведенному на сайте")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Статистика успешно получена",
                     content = @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = TimeOnSiteStats.class))))
+                            array = @ArraySchema(schema = @Schema(implementation = TimeOnSiteStatsUserActivity.class))))
     })
     @GetMapping("/analytics/time-on-site")
-    public ResponseEntity<List<TimeOnSiteStats>> getTimeOnSite() {
-        List<TimeOnSiteStats> timeStats = userActivityService.getTimeOnSite();
+    public ResponseEntity<List<TimeOnSiteStatsUserActivity>> getTimeOnSite() {
+        List<TimeOnSiteStatsUserActivity> timeStats = userActivityService.getTimeOnSite();
         return ResponseEntity.ok(timeStats);
     }
 }

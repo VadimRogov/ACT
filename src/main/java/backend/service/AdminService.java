@@ -2,17 +2,22 @@ package backend.service;
 
 import backend.model.Admin;
 import backend.repository.AdminRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class AdminService {
+
     private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
+
+    // Конструктор для внедрения зависимостей
+    public AdminService(AdminRepository adminRepository, PasswordEncoder passwordEncoder) {
+        this.adminRepository = adminRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public Optional<Admin> findByUsername(String username) {
         return adminRepository.findByUsername(username);

@@ -1,8 +1,8 @@
 package backend.controller;
 
 import backend.dto.analytics.InteractiveElementStats;
-import backend.dto.analytics.PageStats;
-import backend.dto.analytics.TimeOnSiteStats;
+import backend.dto.analytics.PageStatsAnalytics;
+import backend.dto.analytics.TimeOnSiteStatsAnalytics;
 import backend.dto.analytics.TrafficSourceStats;
 import backend.security.JwtUtil;
 import backend.service.AnalyticsService;
@@ -14,21 +14,23 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-
 @Tag(name = "AnalyticsController", description = "Контроллер для предоставления аналитики")
 @RestController
 @RequestMapping("/api/analytics")
-@RequiredArgsConstructor
 public class AnalyticsController {
     private final AnalyticsService analyticsService;
     private final JwtUtil jwtUtil;
+
+    public AnalyticsController(AnalyticsService analyticsService, JwtUtil jwtUtil) {
+        this.analyticsService = analyticsService;
+        this.jwtUtil = jwtUtil;
+    }
 
 
     @Operation(summary = "Получить количество уникальных посетителей", description = "Возвращает количество уникальных посетителей сайта")
@@ -81,11 +83,11 @@ public class AnalyticsController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Данные успешно получены",
                     content = @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = TimeOnSiteStats.class)))),
+                            array = @ArraySchema(schema = @Schema(implementation = TimeOnSiteStatsAnalytics.class)))),
             @ApiResponse(responseCode = "403", description = "Доступ запрещен")
     })
     @GetMapping("/time-on-site")
-    public ResponseEntity<List<TimeOnSiteStats>> getTimeOnSite(
+    public ResponseEntity<List<TimeOnSiteStatsAnalytics>> getTimeOnSite(
             @RequestHeader("Authorization") @Parameter(description = "Токен авторизации", required = true) String authorizationHeader) {
 
         String token = authorizationHeader.substring(7); // Убираем "Bearer "
@@ -104,11 +106,11 @@ public class AnalyticsController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Данные успешно получены",
                     content = @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = PageStats.class)))),
+                            array = @ArraySchema(schema = @Schema(implementation = PageStatsAnalytics.class)))),
             @ApiResponse(responseCode = "403", description = "Доступ запрещен")
     })
     @GetMapping("/popular-pages")
-    public ResponseEntity<List<PageStats>> getPopularPages(
+    public ResponseEntity<List<PageStatsAnalytics>> getPopularPages(
             @RequestHeader("Authorization") @Parameter(description = "Токен авторизации", required = true) String authorizationHeader) {
 
         String token = authorizationHeader.substring(7); // Убираем "Bearer "

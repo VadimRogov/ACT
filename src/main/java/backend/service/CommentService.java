@@ -2,15 +2,17 @@ package backend.service;
 
 import backend.model.Comment;
 import backend.repository.CommentRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class CommentService {
     private final CommentRepository commentRepository;
+
+    public CommentService(CommentRepository commentRepository) {
+        this.commentRepository = commentRepository;
+    }
 
     // Добавить комментарий
     public Comment addComment(String content, String author) {

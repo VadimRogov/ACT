@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +19,16 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "ImageController", description = "Контроллер для работы с изображениями")
 @RestController
 @RequestMapping("/api/images")
-@RequiredArgsConstructor
 public class ImageController {
     private final ImageService imageService;
     private final BookService bookService;
     private final JwtUtil jwtUtil;
+
+    public ImageController(ImageService imageService, BookService bookService, JwtUtil jwtUtil) {
+        this.imageService = imageService;
+        this.bookService = bookService;
+        this.jwtUtil = jwtUtil;
+    }
 
     @Operation(summary = "Сохранение изображения", description = "Сохраняет новое изображение для книги")
     @ApiResponses({

@@ -41,7 +41,8 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<optional>true</optional>
+			<version>1.18.28</version> <!-- Используйте актуальную версию -->
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Spring Boot Starter Test -->

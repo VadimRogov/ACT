@@ -1,14 +1,14 @@
-package backend.dto.userActivy;
+package backend.dto.analytics;
 
-public class TimeOnSiteStats {
+public class TimeOnSiteStatsAnalytics {
     private String sessionId; // Идентификатор сессии
     private long timeOnSite; // Время на сайте в секундах
 
-    public TimeOnSiteStats() {
+    public TimeOnSiteStatsAnalytics() {
 
     }
 
-    public TimeOnSiteStats(String sessionId, long timeOnSite) {
+    public TimeOnSiteStatsAnalytics(String sessionId, long timeOnSite) {
         this.sessionId = sessionId;
         this.timeOnSite = timeOnSite;
     }

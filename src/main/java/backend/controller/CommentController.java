@@ -5,12 +5,9 @@ import backend.security.JwtUtil;
 import backend.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,10 +17,15 @@ import java.util.List;
 @Tag(name = "CommentController", description = "Контроллер для работы с комментариями")
 @RestController
 @RequestMapping("/api/comments")
-@RequiredArgsConstructor
 public class CommentController {
+
     private final CommentService commentService;
     private final JwtUtil jwtUtil;
+
+    public CommentController(CommentService commentService, JwtUtil jwtUtil) {
+        this.commentService = commentService;
+        this.jwtUtil = jwtUtil;
+    }
 
     @Operation(summary = "Добавить комментарий", description = "Добавляет новый комментарий")
     @ApiResponses({
